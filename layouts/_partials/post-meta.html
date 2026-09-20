@@ -5,4 +5,6 @@
   {{ end }}
   {{ if eq .Type "writing" }}&middot; {{ .ReadingTime }} min read{{ end }}
   {{ with .GetTerms "categories" }}{{ range . }}&middot; <a class="cat" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ end }}
+  {{ with .Params.status }}&middot; <span class="status status-{{ . | urlize }}">{{ . }}</span>{{ end }}
+  {{ with .Params.tested_versions }}&middot; <span class="tested">{{ if reflect.IsSlice . }}{{ delimit . ", " }}{{ else }}{{ . }}{{ end }}</span>{{ end }}
 </p>

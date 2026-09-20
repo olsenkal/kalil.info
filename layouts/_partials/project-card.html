@@ -1,5 +1,5 @@
 <article class="card">
-  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ with .Params.status }} <span class="status status-{{ . | urlize }}">{{ . }}</span>{{ end }}</h3>
   {{ with .Description }}<p>{{ . }}</p>{{ end }}
   {{ with .Params.stack }}<p class="muted small">{{ delimit . " · " }}</p>{{ end }}
 </article>

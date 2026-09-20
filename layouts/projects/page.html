@@ -4,6 +4,7 @@
     <h1>{{ .Title }}</h1>
     {{ with .Description }}<p class="lede">{{ . }}</p>{{ end }}
     <dl class="facts">
+      {{ with .Params.status }}<dt>Status</dt><dd><span class="status status-{{ . | urlize }}">{{ . }}</span></dd>{{ end }}
       {{ with .Params.role }}<dt>Role</dt><dd>{{ . }}</dd>{{ end }}
       {{ with .Params.when }}<dt>When</dt><dd>{{ . }}</dd>{{ end }}
       {{ with .Params.stack }}<dt>Stack</dt><dd>{{ delimit . ", " }}</dd>{{ end }}

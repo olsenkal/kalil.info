@@ -1,0 +1,15 @@
+/* content model: status badges, review callout, mono meta */
+.meta time, .meta .tested, .tags a, .facts dd, .prose table { font-family: var(--mono); }
+.meta time, .meta .tested, .tags a { font-size: .8125rem; }
+.prose table { border-collapse: collapse; font-size: .875rem; display: block; overflow-x: auto; }
+.prose th, .prose td { border: 1px solid var(--line); padding: .35rem .7rem; text-align: left; }
+.prose th { background: var(--card); color: var(--muted); }
+
+.status { display: inline-block; padding: .05rem .55rem; border: 1px solid var(--muted); border-radius: 999px; color: var(--muted); font: 600 .72rem var(--mono); text-transform: uppercase; letter-spacing: .04em; vertical-align: middle; }
+.status-running { color: var(--accent2); border-color: var(--accent2); }
+.status-in-progress { color: var(--accent); border-color: var(--accent); }
+.status-retired { color: var(--muted); border-color: var(--line); }
+
+.review-box p { margin: 0 0 .6rem; }
+.review-box ul { margin: 0 0 .6rem; padding-left: 1.2rem; }
+.review-box > :last-child { margin-bottom: 0; }

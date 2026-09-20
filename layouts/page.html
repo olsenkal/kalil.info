@@ -5,6 +5,14 @@
     {{ if eq .Type "writing" }}{{ partial "post-meta.html" . }}{{ end }}
   </header>
   <div class="prose">{{ .Content }}</div>
+  {{ if and (eq .Type "writing") (or .Params.verdict .Params.pros .Params.cons) }}
+    <aside class="callout review-box">
+      {{ with .Params.verdict }}<strong>Verdict</strong><p>{{ . }}</p>{{ end }}
+      {{ with .Params.time_used }}<strong>Time used</strong><p>{{ . }}</p>{{ end }}
+      {{ with .Params.pros }}<strong>Pros</strong>{{ if reflect.IsSlice . }}<ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ else }}<p>{{ . }}</p>{{ end }}{{ end }}
+      {{ with .Params.cons }}<strong>Cons</strong>{{ if reflect.IsSlice . }}<ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ else }}<p>{{ . }}</p>{{ end }}{{ end }}
+    </aside>
+  {{ end }}
   {{ with .GetTerms "tags" }}
     <ul class="tags">{{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}</ul>
   {{ end }}
