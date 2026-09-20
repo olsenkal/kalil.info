@@ -3,6 +3,13 @@ title: '{{ replace .File.ContentBaseName "-" " " | title }}'
 date: {{ .Date }}
 draft: true
 description: ""
-categories: []   # exactly one of: how-to, homelab, review, life, research, work
+categories: [research]
 tags: []
 ---
+## Question
+
+## Sources
+
+## Notes
+
+## Open questions
