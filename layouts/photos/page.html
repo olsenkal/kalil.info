@@ -1,0 +1,18 @@
+{{ define "main" }}
+<article>
+  <header>
+    <h1>{{ .Title }}</h1>
+    {{ partial "post-meta.html" . }}
+  </header>
+  <div class="prose">{{ .Content }}</div>
+  <div class="gallery">
+    {{ range .Resources.ByType "image" }}
+      {{ $thumb := .Fill "640x427 webp q80" }}
+      {{ $full := .Resize "2000x webp q85" }}
+      <a href="{{ $full.RelPermalink }}">
+        <img src="{{ $thumb.RelPermalink }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" alt="{{ .Params.alt | default $.Title }}" loading="lazy">
+      </a>
+    {{ end }}
+  </div>
+</article>
+{{ end }}

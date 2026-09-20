@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  {{ partial "header.html" . }}
+  <main id="main" class="wrap">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "footer.html" . }}
+  {{ with resources.Get "js/theme.js" | minify }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
+</body>
+</html>

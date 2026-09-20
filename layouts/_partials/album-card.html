@@ -1,0 +1,12 @@
+{{- $cover := "" }}
+{{- with .Params.cover }}{{ $cover = $.Resources.GetMatch . }}{{ end }}
+{{- if not $cover }}{{ $cover = index (.Resources.ByType "image") 0 }}{{ end }}
+<article class="card album">
+  <a href="{{ .RelPermalink }}">
+    {{ with $cover }}
+      {{ $t := .Fill "640x420 webp q80" }}
+      <img src="{{ $t.RelPermalink }}" width="{{ $t.Width }}" height="{{ $t.Height }}" alt="" loading="lazy">
+    {{ end }}
+    <h3>{{ .Title }}</h3>
+  </a>
+</article>

@@ -1,0 +1,5 @@
+<li class="item">
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  {{ partial "post-meta.html" . }}
+  {{ with or .Description .Summary }}<p>{{ . | plainify | truncate 180 }}</p>{{ end }}
+</li>

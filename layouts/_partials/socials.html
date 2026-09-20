@@ -1,0 +1,11 @@
+{{- $s := site.Params.socials }}
+{{- $email := site.Params.email }}
+{{- if or $email (gt (len (where (slice $s.github $s.linkedin $s.mastodon $s.instagram) "." "ne" "")) 0) }}
+<ul class="footer-links socials">
+  {{ with $email }}<li><a href="mailto:{{ . }}">Email</a></li>{{ end }}
+  {{ with $s.github }}<li><a rel="me" href="{{ . }}">GitHub</a></li>{{ end }}
+  {{ with $s.linkedin }}<li><a rel="me" href="{{ . }}">LinkedIn</a></li>{{ end }}
+  {{ with $s.mastodon }}<li><a rel="me" href="{{ . }}">Mastodon</a></li>{{ end }}
+  {{ with $s.instagram }}<li><a rel="me" href="{{ . }}">Instagram</a></li>{{ end }}
+</ul>
+{{- end }}

@@ -1,0 +1,71 @@
+baseURL = "https://kalil.info/"
+locale = "en-us"
+title = "Kalil Olsen"
+enableRobotsTXT = true
+
+[pagination]
+  pagerSize = 10
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+
+[services.rss]
+  limit = 20
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[markup.highlight]
+  noClasses = true
+  style = "dracula"
+
+[params]
+  # TODO: rewrite in your own words. This one line is the most important text on the site.
+  tagline = "Building things, fixing things, and photographing the rest."
+  subtagline = "Homelab notes, how-tos, reviews, and the occasional good frame."
+  description = "Personal site of Kalil Olsen: writing, projects, photography, and homelab notes."
+  author = "Kalil Olsen"
+  # Default share-card image (put a 1200x630 PNG at static/og-default.png).
+  ogImage = "og-default.png"
+  # Contact hub. Empty values are hidden.
+  email = ""
+  [params.socials]
+    github = ""
+    linkedin = ""
+    mastodon = ""
+    instagram = ""
+
+[menus]
+  [[menus.main]]
+    name = "Writing"
+    pageRef = "/posts"
+    weight = 10
+  [[menus.main]]
+    name = "Projects"
+    pageRef = "/projects"
+    weight = 20
+  [[menus.main]]
+    name = "Photos"
+    pageRef = "/photos"
+    weight = 30
+  [[menus.main]]
+    name = "About"
+    pageRef = "/about"
+    weight = 40
+  [[menus.footer]]
+    name = "Now"
+    pageRef = "/now"
+    weight = 10
+  [[menus.footer]]
+    name = "Uses"
+    pageRef = "/uses"
+    weight = 20
+  [[menus.footer]]
+    name = "Résumé"
+    pageRef = "/resume"
+    weight = 30

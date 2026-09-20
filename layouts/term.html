@@ -1,0 +1,4 @@
+{{ define "main" }}
+<header><h1>{{ .Data.Singular | title }}: {{ .Title }}</h1></header>
+<ul class="list">{{ range .Pages }}{{ partial "post-item.html" . }}{{ end }}</ul>
+{{ end }}

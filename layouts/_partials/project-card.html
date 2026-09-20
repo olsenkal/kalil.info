@@ -1,0 +1,5 @@
+<article class="card">
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  {{ with .Params.stack }}<p class="muted small">{{ delimit . " · " }}</p>{{ end }}
+</article>

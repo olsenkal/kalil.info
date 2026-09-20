@@ -1,0 +1,31 @@
+{{ define "main" }}
+<section class="hero">
+  <h1>{{ site.Params.tagline }}</h1>
+  <p class="lede">{{ site.Params.subtagline }}</p>
+  {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+</section>
+
+{{ with where site.RegularPages "Type" "posts" }}
+<section>
+  <h2 class="section-title">Latest writing</h2>
+  <ul class="list">{{ range first 5 . }}{{ partial "post-item.html" . }}{{ end }}</ul>
+  <p><a href="{{ "posts/" | relURL }}">All posts &rarr;</a></p>
+</section>
+{{ end }}
+
+{{ with where site.RegularPages "Type" "projects" }}
+<section>
+  <h2 class="section-title">Projects</h2>
+  <div class="cards">{{ range first 3 . }}{{ partial "project-card.html" . }}{{ end }}</div>
+  <p><a href="{{ "projects/" | relURL }}">All projects &rarr;</a></p>
+</section>
+{{ end }}
+
+{{ with where site.RegularPages "Type" "photos" }}
+<section>
+  <h2 class="section-title">Photography</h2>
+  <div class="cards">{{ range first 3 . }}{{ partial "album-card.html" . }}{{ end }}</div>
+  <p><a href="{{ "photos/" | relURL }}">All albums &rarr;</a></p>
+</section>
+{{ end }}
+{{ end }}

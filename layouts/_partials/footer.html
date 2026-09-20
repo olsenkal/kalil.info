@@ -1,0 +1,11 @@
+<footer class="site-footer">
+  <div class="wrap">
+    <ul class="footer-links">
+      {{ range site.Menus.footer }}<li><a href="{{ .URL }}">{{ .Name }}</a></li>{{ end }}
+      <li><a href="{{ "tags/" | relURL }}">Tags</a></li>
+      <li><a href="{{ "index.xml" | relURL }}">RSS</a></li>
+    </ul>
+    {{ partial "socials.html" . }}
+    <p class="muted">&copy; {{ now.Year }} {{ site.Params.author }}</p>
+  </div>
+</footer>

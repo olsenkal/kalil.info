@@ -1,0 +1,12 @@
+{{ define "main" }}
+<article>
+  <header>
+    <h1>{{ .Title }}</h1>
+    {{ if eq .Type "posts" }}{{ partial "post-meta.html" . }}{{ end }}
+  </header>
+  <div class="prose">{{ .Content }}</div>
+  {{ with .GetTerms "tags" }}
+    <ul class="tags">{{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}</ul>
+  {{ end }}
+</article>
+{{ end }}
