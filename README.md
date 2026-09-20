@@ -1,6 +1,6 @@
 # kalil.info
 
-Personal site for Kalil Olsen: a blog, how-tos, reviews, homelab notes, project case studies, and a low-key image gallery. Built with Hugo, hosted on GitHub Pages, served at [kalil.info](https://kalil.info) behind Cloudflare.
+Personal site for Kalil Olsen: a blog, how-tos, reviews, homelab notes, project case studies, music, and a low-key image gallery. Built with Hugo, hosted on GitHub Pages, served at [kalil.info](https://kalil.info) behind Cloudflare.
 
 This document describes the site as it stands, how it's put together, why key decisions were made, and how to work on it.
 
@@ -15,24 +15,26 @@ This document describes the site as it stands, how it's put together, why key de
 
 | Area | State |
 | --- | --- |
-| Site design and templates | Done |
-| Domain, HTTPS, Cloudflare | Done and verified |
+| Site design, templates, structure | Done (overhaul phase 1 complete) |
+| Domain, HTTPS, Cloudflare proxy | Done and verified |
 | CI/CD | Done, deploys on every push to `main` |
+| Image privacy guards | Done (see section 8) |
+| Cloudflare hardening (headers, CSP, analytics) | Guide written, dashboard steps pending (`docs/cloudflare.md`) |
 | **Real content** | **Not started.** Everything is placeholder text marked `TODO` (see section 10) |
 
-The live site currently shows placeholder content. Filling it in is the next job.
+The structure is final. Only content is TODO.
 
 ---
 
 ## 2. Goals and scope
 
-The site is a personal brand hub, not just a blog. Requested content areas: personal blog, how-tos, photography (later demoted to a general gallery), portfolio, homelab projects, reviews, professional experience, and personal/hobby sections.
+The site is a personal brand hub for a mixed audience: recruiters and clients, peers in tech, and friends and family. Content areas: blog, how-tos, reviews, homelab, project case studies, professional experience, music, and personal life.
 
 Design decisions that follow from that:
 
-- **One content stream, many facets.** Blog, how-to, review, homelab, and life posts are all in a single `posts` section, separated by categories and tags. This avoids five separate sections that all need upkeep.
-- **Distinct sections only where the layout genuinely differs:** Projects (case studies), Homelab (a hub), Gallery (images), plus About, Now, Uses, Résumé, Contact.
-- **Photography is de-emphasized.** It's a footer-linked Gallery for any kind of image (photos, rack builds, screenshots), not a headline feature.
+- **One content stream, many facets.** Everything written lives in one `writing` section, separated by categories and tags. This avoids several sections that all need upkeep.
+- **Distinct sections only where the layout genuinely differs:** Projects (case studies), Homelab (a hub), Gallery (images), plus About, Now, Uses, Resume, Music, Contact.
+- **Photography is de-emphasized.** It's a footer-linked Gallery for any kind of image (photos, rack builds, screenshots).
 - **Visual direction:** clean and editorial: whitespace, serif headings, light and dark mode.
 
 ---
@@ -44,16 +46,16 @@ Markdown + Hugo templates
         |
         |  git push to main
         v
-GitHub Actions  ->  hugo --gc --minify  ->  GitHub Pages
-                                                  |
-                                Cloudflare (proxy, SSL Full strict)
-                                                  |
-                                             kalil.info
+GitHub Actions  ->  EXIF check -> hugo --gc --minify  ->  GitHub Pages
+                                                              |
+                                            Cloudflare (proxy, SSL Full strict)
+                                                              |
+                                                         kalil.info
 ```
 
 - **Hugo** builds the static site. No Node toolchain, no runtime, one binary (installed locally via Homebrew; CI installs the same pinned version).
 - **GitHub Pages** hosts it. The Pages source is "GitHub Actions" (not the legacy `gh-pages` branch).
-- **Cloudflare** is the DNS provider and, now, a reverse proxy in front of Pages.
+- **Cloudflare** is the DNS provider and a reverse proxy in front of Pages.
 
 ---
 
@@ -61,19 +63,22 @@ GitHub Actions  ->  hugo --gc --minify  ->  GitHub Pages
 
 ```
 hugo.toml                  Site config, params, menus
-archetypes/
-  default.md               Template for `hugo new content posts/...`
-  projects.md              Case-study template for projects
+archetypes/                Templates for `hugo new content --kind <kind>`
+  default.md  howto.md  homelab.md  review.md  life.md  research.md  projects.md
 assets/
-  css/main.css             All styling (one file, CSS variables)
+  css/main.css             Base styling (CSS variables)
+  css/ext-*.css            Feature stylesheets, auto-appended after main.css
+                           (ext-home.css, ext-content-model.css)
   js/theme.js              Dark mode toggle
   js/lightbox.js           Gallery lightbox (loaded only on gallery pages)
 content/
   _index.md                Homepage (optional intro text)
-  about.md  now.md  uses.md  resume.md  contact.md  homelab.md
-  posts/                   Blog / how-to / review / homelab / life
+  about.md  now.md  uses.md  resume.md  contact.md  homelab.md  music.md
+  writing/                 Blog / how-to / review / homelab / life / research / work
   projects/                Case studies
   gallery/<collection>/    Image collections (page bundles)
+docs/
+  cloudflare.md            Dashboard guide: headers, CSP, analytics, cache purge
 layouts/
   baseof.html              Page shell, theme script, scripts block
   home.html  page.html  section.html  taxonomy.html  term.html  404.html
@@ -84,12 +89,16 @@ layouts/
   _partials/               head, header, footer, monogram, socials,
                            post-meta, post-item, project-card,
                            album-card, pagination
+scripts/
+  strip-exif.sh            Strip (or --check for) image metadata
+  og/                      Source and script that regenerate the share image
+.githooks/pre-commit       Strips EXIF from staged images
 static/
   CNAME                    Custom domain marker (kalil.info)
   .nojekyll                Prevents Pages from mangling underscore paths
-  favicon.svg              Monogram, adapts to dark mode
-  og-default.png           Default share-card image (placeholder)
-.github/workflows/pages.yml    Build and deploy workflow
+  favicon.svg              Monogram as SVG paths, adapts to dark mode
+  og-default.png           Default share-card image (1200x630)
+.github/workflows/pages.yml    Check, build, deploy, optional cache purge
 ```
 
 ---
@@ -98,9 +107,9 @@ static/
 
 **Direction:** "Clean and editorial" (chosen from three mockups).
 
-**Typography:** Georgia (serif) for headings and the wordmark; system sans-serif for body. No webfonts, so nothing to load or license.
+**Typography:** Georgia (serif) for headings and the wordmark; system sans-serif for body; a system monospace stack (`ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`) for metadata (dates, tags, status badges, spec tables). No webfonts, so nothing to load or license.
 
-**Color tokens** (all defined as CSS variables in `assets/css/main.css`):
+**Color tokens** (CSS variables in `assets/css/main.css`):
 
 | Token | Light | Dark |
 | --- | --- | --- |
@@ -112,11 +121,15 @@ static/
 | `--accent` (rust) | `#9a3f1d` | `#e08a62` |
 | `--accent2` (teal) | `#1d6b73` | `#5fbdc4` |
 
-Rust is the primary accent (links, monogram). Teal is the second accent (section-heading rules, card top edges, category labels, tag hover, callouts).
+Rust is the primary accent (links, monogram). Teal is the second accent (section-heading rules, card top edges, category labels, tag hover, callouts, "running" badges).
+
+**CSS structure:** `head.html` concatenates `main.css` with every `assets/css/ext-*.css` (alphabetical), then minifies and fingerprints the bundle. Add a feature stylesheet by creating a new `ext-<name>.css`; no template change needed.
 
 **Dark mode:** follows the system setting by default. A header toggle overrides it and stores the choice in `localStorage`. A small inline script in `<head>` sets the theme before first paint to avoid a flash. The CSS uses `prefers-color-scheme` plus a `data-theme` attribute so an explicit choice always wins.
 
-**Monogram:** an outlined, sharp-cornered square with a serif "K" and a teal underline (selected from about 30 variations across several rounds). It appears in the header and homepage hero (as inline SVG using the theme variables) and as the favicon (`static/favicon.svg`, which has its own dark-mode media query).
+**Monogram:** an outlined, sharp-cornered square with a serif "K" and a teal underline (selected from about 30 variations). It appears in the header and homepage hero (inline SVG using the theme variables; the K is `<text>`, so it can vary slightly by font) and as the favicon (`static/favicon.svg`, where the K is an SVG path extracted from Georgia Bold so it renders identically everywhere, with its own dark-mode media query).
+
+**Share card:** `static/og-default.png` (monogram, name, teal rule, domain; no tagline). Regenerate with the source and script in `scripts/og/`.
 
 **Responsive:** single-column reading width (46rem). Card grids reflow automatically. Below about 34rem the header nav drops to its own row beneath the name and toggle.
 
@@ -124,15 +137,19 @@ Rust is the primary accent (links, monogram). Teal is the second accent (section
 
 ## 6. Features
 
-- **Homepage:** hero (monogram, headline "Hi, I'm Kalil.", one-line subline), **Start here** cards (defined in `hugo.toml`), latest writing (5), featured projects (3).
-- **Writing:** one stream with categories (`how-to`, `homelab`, `review`, `life`) and free-form tags. Shows date, an "Updated" date when `lastmod` differs, reading time, and category. Paginated at 10.
-- **Homelab hub (`/homelab/`):** hand-written overview sections, then automatically lists (a) projects marked `homelab: true` under "Builds" and (b) all posts in the `homelab` category under "Write-ups".
-- **Projects as case studies:** front matter drives a facts block (role, dates, stack, repo, write-up link) and an "Outcome" callout; body follows Problem, Approach, Result.
-- **Gallery:** each collection is a folder of images. Hugo generates thumbnails and web-sized WebP automatically. A lightbox opens images in place: arrows, keyboard (left, right, Escape), swipe, click-outside-to-close, scroll lock. Falls back to plain image links without JavaScript or on modified clicks.
+- **Header nav:** Writing, Projects, Homelab, Resume, About. **Footer:** Now, Uses, Gallery, Music, Contact, Tags, RSS, plus social links when set.
+- **Homepage:** hero (monogram, headline, one-line subline); a **Now snippet** (the `summary` front matter from `now.md`, hidden when absent); three **audience doors** defined in `params.startHere`:
+  - **Work** (recruiters, clients): Resume
+  - **Build** (peers): Projects, Homelab
+  - **Life** (friends and family): life posts, Gallery, Music
+  A door link with `ifPage` renders only when that page exists, so it can never 404. The homepage also shows latest writing (5) and featured projects (3).
+- **Writing:** one stream at `/writing/`. Fixed categories, exactly one per post: `how-to`, `homelab`, `review`, `life`, `research`, `work`. Tags are free-form. Shows date, an "Updated" date when `lastmod` differs, reading time, and category. Paginated at 10.
+- **Post front matter that renders:** `status` (badge), `tested_versions` (mono text), and for reviews `verdict`, `time_used`, `pros`, `cons` (shown as a callout; `pros`/`cons` accept a list or a string).
+- **Homelab hub (`/homelab/`):** hand-written overview sections, then automatically lists projects marked `homelab: true` under "Builds" and all posts in the `homelab` category under "Write-ups".
+- **Projects as case studies:** front matter drives a facts block (role, dates, status, stack, repo, write-up link) and an "Outcome" callout; the body follows Problem, Approach, Result. `status` is a badge on the card and in the facts block.
+- **Gallery:** each collection is a folder of images. Hugo generates thumbnails and web-sized WebP. **Only the processed WebP renditions are published**; original files stay in the repo and are not copied to the site (`publishResources: false`, cascaded from `content/gallery/_index.md`). Hugo's WebP output carries no EXIF or GPS. A lightbox opens images in place (arrows, keyboard, swipe, click-outside-to-close, scroll lock), falling back to plain image links without JavaScript.
 - **Contact page:** an "Open to" card list (from front matter), email, and social links. Email and socials are blank until set in `hugo.toml`.
-- **Also included:** About, Now, Uses, and Résumé pages; tag and category index pages; RSS (site and per section); sitemap; `robots.txt`; 404 page; canonical URLs; Open Graph and Twitter card tags; skip-to-content link; syntax-highlighted code blocks.
-
-**Navigation:** header has Writing, Homelab, Projects, About, Contact. Footer has Now, Uses, Gallery, Résumé, Tags, RSS, plus social links when set.
+- **Also:** About, Now, Uses, Resume, and Music pages; tag and category index pages; RSS (site and per section); sitemap; `robots.txt`; 404 page; canonical URLs; Open Graph and Twitter card tags; skip-to-content link; syntax-highlighted code blocks.
 
 ---
 
@@ -141,7 +158,11 @@ Rust is the primary accent (links, monogram). Teal is the second accent (section
 ### GitHub
 - Repo `olsenkal/kalil.info`, public.
 - Pages source: **GitHub Actions**. Custom domain: `kalil.info`. **Enforce HTTPS: on.** The certificate is issued by GitHub and renews automatically.
-- Workflow (`.github/workflows/pages.yml`): installs the pinned Hugo extended version, runs `hugo --gc --minify`, uploads `public/`, and deploys with `actions/deploy-pages`. Triggers on push to `main` and manually.
+- Workflow (`.github/workflows/pages.yml`), triggered on push to `main` and manually:
+  1. **build job:** installs the pinned Hugo extended version, **fails the build if any committed image under `content/` has GPS tags** (`scripts/strip-exif.sh --check`, using `libimage-exiftool-perl`), runs `hugo --gc --minify`, uploads `public/`.
+  2. **deploy job:** `actions/deploy-pages`.
+  3. **purge-cache job (optional):** purges the Cloudflare cache after deploy. It skips cleanly unless the repo secrets `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_API_TOKEN` are both set (token scoped to Cache Purge on this zone only).
+- Action versions: checkout v7, configure-pages v6, upload-pages-artifact v5, deploy-pages v5. Note: upload-pages-artifact v4+ skips dotfiles, so `static/.nojekyll` is not in the artifact; that's harmless for Actions-based deploys.
 
 ### DNS (Cloudflare)
 - Apex `kalil.info`: four `A` records to GitHub Pages (`185.199.108.153`, `.109.153`, `.110.153`, `.111.153`) and four `AAAA` records (`2606:50c0:8000::153` through `8003::153`).
@@ -150,16 +171,20 @@ Rust is the primary accent (links, monogram). Teal is the second accent (section
 - Source for the IPs: GitHub's "Managing a custom domain for your GitHub Pages site" documentation.
 
 ### Cloudflare proxy
-- Records are **proxied** (orange cloud).
-- SSL/TLS mode: **Full (strict)**.
-- Cloudflare cache can serve a stale page after a deploy; use Caching, then Purge Everything if an update doesn't appear.
+- Records are **proxied** (orange cloud). SSL/TLS mode: **Full (strict)**.
+- Cloudflare cache can serve a stale page after a deploy. Set up the purge job above, or use Caching, then Purge Everything.
+
+### Hardening guide
+`docs/cloudflare.md` is a step-by-step guide for the dashboard work that must be done by hand: verify the domain in GitHub account settings, enable Cloudflare Web Analytics, add security response headers (HSTS, `nosniff`, Referrer-Policy, Permissions-Policy), a Content-Security-Policy (report-only first), and the cache-purge token and secrets.
+
+The CSP is tied to a hash of the inline theme script in `<head>`. **Recompute the hash whenever that script or Hugo's minification changes**; the guide has a one-liner. The built HTML also has three inline `style=` attributes on code blocks (from `noClasses = true` in the highlight config), which the policy has to allow unless the highlighter is switched to a stylesheet.
 
 ### Setup order that worked (and why)
 1. Records had to be **DNS only** (grey cloud) first. GitHub verifies the domain and issues its certificate by seeing its own IPs; a proxy hides them.
 2. Set the custom domain in Pages, wait for the certificate (`approved`), enable Enforce HTTPS.
 3. Then switch the records to proxied and set SSL mode to **Full (strict)**.
 
-### Problems hit, and fixes (for future reference)
+### Problems hit, and fixes
 | Problem | Cause | Fix |
 | --- | --- | --- |
 | Could not add root A records | A stray proxied root `CNAME` (a misplaced DKIM entry) already existed; a name can't hold a CNAME and A records | Deleted the stray CNAME. Verified the real DKIM records live on the `dkimN._domainkey` subdomains and were unaffected |
@@ -177,6 +202,12 @@ GitHub renews its certificate through the domain, and a proxy can interfere. Set
 
 ## 8. Working on the site
 
+### One-time local setup
+```bash
+brew install exiftool                       # image metadata tool
+git config core.hooksPath .githooks         # enable the pre-commit EXIF stripper
+```
+
 ### Local development
 ```bash
 cd "Personal Website"
@@ -191,24 +222,47 @@ git add -A && git commit -m "Add post" && git push
 The workflow deploys automatically. Check progress with `gh run list`.
 
 ### New post
+Each post type has an archetype:
 ```bash
-hugo new content posts/my-post/index.md
+hugo new content --kind howto    writing/my-post/index.md
+hugo new content --kind homelab  writing/my-post/index.md
+hugo new content --kind review   writing/my-post/index.md
+hugo new content --kind life     writing/my-post/index.md
+hugo new content --kind research writing/my-post/index.md
 ```
-Front matter: `title`, `date`, `description`, `categories` (one of `how-to`, `homelab`, `review`, `life`), `tags`, and `draft: true` until ready. Put images in the same folder as `index.md`. Set `lastmod` when revising a how-to to show an "Updated" date. Any post with `categories: [homelab]` appears on the Homelab page automatically.
+Categories are a fixed list, one per post: `how-to`, `homelab`, `review`, `life`, `research`, `work`. Tags are free-form (review them quarterly). Posts start as `draft: true`. Put images in the same folder as `index.md`. **Set `lastmod` whenever you revise a how-to** so the "Updated" date shows. Any post with `categories: [homelab]` appears on the Homelab page automatically.
+
+Title conventions: how-to "How to set up X on Y"; homelab "Build: X" or "Incident: X"; life updates "Update: Month Year"; reviews "Review: X".
 
 ### New project (case study)
 ```bash
-hugo new content projects/my-project.md
+hugo new content --kind projects projects/my-project.md
 ```
-Fill in `role`, `when`, `stack`, `outcome`, optional `repo` and `writeup`, and the Problem, Approach, Result sections. Set `homelab: true` to also list it on the Homelab page.
+Fill in `role`, `when`, `status` (running / retired / in progress), `stack`, `outcome`, optional `repo` and `writeup`, and the Problem, Approach, Result sections. Set `homelab: true` to also list it on the Homelab page.
 
 ### New gallery collection
 Create `content/gallery/<name>/index.md` with a `title`, `date`, `description`, and optional `cover:` filename, then drop images into the same folder. Thumbnails and web sizes are generated at build time. Add per-image alt text via a `resources` list in the front matter (the default alt is the collection title).
 
+### Images: privacy rules
+The repo is public, so **original images committed to the repo are publicly downloadable from GitHub** even though the site only serves processed WebP.
+
+- Keep source images to about 2000px on the long edge (keeps the repo well under the GitHub Pages 1 GB limit).
+- The pre-commit hook strips metadata from staged images. To do it by hand: `scripts/strip-exif.sh` (or `--check` to list any files with GPS tags; exits nonzero if found).
+- CI fails the build if a committed image has GPS tags.
+
+### Pre-publish checklist
+- [ ] No real IPs, hostnames, internal domains, VLAN addressing, MACs, or serial numbers
+- [ ] EXIF stripped (hook and CI enforce GPS)
+- [ ] No employer customer names or internal details
+- [ ] No phone number or home address, including in the resume PDF
+- [ ] Consent for photos of other people
+- [ ] Drafts contain nothing private (the repo is public)
+- [ ] Employer's outside-publishing and social media policy checked before posting anything in the `work` category or naming the employer beyond the resume
+
 ### Site-wide settings (`hugo.toml`)
 - `params.tagline` / `params.subtagline`: homepage headline and line under it
 - `params.email`, `params.socials.*`: contact hub (blank values are hidden)
-- `params.startHere`: homepage "Start here" cards
+- `params.startHere`: the three audience doors on the homepage
 - `params.ogImage`: default share-card image
 - `menus.main` / `menus.footer`: navigation
 
@@ -218,43 +272,50 @@ Create `content/gallery/<name>/index.md` with a `title`, `date`, `description`, 
 
 | Decision | Rationale |
 | --- | --- |
-| Hugo over Jekyll or plain HTML | Single binary, no Ruby or Node toolchain, fast, built-in taxonomies, RSS, and image processing. System Ruby on macOS is old and awkward for Jekyll |
+| Hugo over Jekyll or plain HTML | Single binary, no Ruby or Node toolchain, fast, built-in taxonomies, RSS, and image processing |
 | Custom theme | Full control, no dependency on a third-party theme's maintenance |
-| One `posts` stream with taxonomies | Blog, how-to, review, homelab, and life share a layout; facets are cheaper to maintain than sections |
+| One `writing` stream with taxonomies | Blog, how-to, review, homelab, life, and research share a layout; facets are cheaper to maintain than sections |
+| `/writing/` instead of `/posts/` | Matches the nav label. Done before any real content existed, since changing it later breaks links |
+| Fixed category list, one per post | Predictable structure; tags stay free-form for detail |
+| Header: Writing, Projects, Homelab, Resume, About | Recruiters reach the resume in one click; Contact and Music live in the footer. The page is spelled "Resume", no accent |
+| Audience doors on the homepage | Three visitor types (work, peers, friends and family) each get an obvious starting point |
+| `ext-*.css` bundling | Feature areas add their own stylesheet without editing `main.css` |
 | GitHub Actions deploy, not `gh-pages` branch | Official, current method; keeps built output out of the repo |
 | `CNAME` in `static/` | Ensures it lands in the published root on every build |
 | Apex domain with A/AAAA records | CNAME at the apex conflicts with other records (mail) |
 | Gallery instead of a Photography section | Photography is an infrequent hobby; a generic gallery covers photos, builds, and screenshots |
+| `publishResources: false` on gallery | Without it, original (possibly GPS-tagged) images shipped in the built site next to the WebP files |
+| EXIF stripped at commit and checked in CI | The repo is public; the originals in git are the exposure, not the built site |
 | Lightbox in about 60 lines of vanilla JS using `<dialog>` | No dependencies; native focus handling and Escape support |
 | Cloudflare proxy on, Full (strict) | Adds firewall and analytics; strict mode is required to avoid a redirect loop with GitHub's HTTPS enforcement |
+| Cloudflare Web Analytics now, self-hosted Umami later | Cloudflare needs no script or cookie changes; Umami stays as an optional homelab project |
 | Repo public | GitHub Pages on a free plan requires it. Don't commit anything private |
 
 ---
 
 ## 10. Outstanding work
 
-**Placeholder content that is live right now (all marked `TODO`):**
-- [ ] Homepage tagline and subline (`hugo.toml`)
-- [ ] `content/about.md`, `resume.md` (add `static/resume.pdf` and uncomment the link), `now.md`, `uses.md`, `homelab.md`, `contact.md`
-- [ ] Sample post `posts/hello-world` and `posts/example-homelab-writeup`: replace or delete
-- [ ] Sample project `projects/example-homelab.md`: replace or delete
-- [ ] Sample gallery collection `gallery/sample-collection`: gradient placeholder images; replace or delete
+**Kalil (content and accounts):**
+- [ ] Homepage tagline and subline (`hugo.toml`; marked with a TODO comment). Then regenerate the share image if the tagline should appear on it
+- [ ] `now.md`: fill in `summary` (shown on the homepage) and the page body
+- [ ] `resume.md` (add `static/resume.pdf` and uncomment the link; add the consulting site link), `about.md` (bio and photo), `homelab.md`, `music.md`, `uses.md`, `contact.md`
 - [ ] `params.email` and `params.socials.*` in `hugo.toml`
-- [ ] `params.startHere` cards: point at the best real pages
-- [ ] `static/og-default.png`: currently a plain placeholder; replace with a 1200x630 image
+- [ ] Replace or delete the sample content: `writing/hello-world`, `writing/example-homelab-writeup`, `projects/example-homelab.md`, `gallery/sample-collection`
+- [ ] Cloudflare and GitHub dashboard steps in `docs/cloudflare.md`: domain verification, Web Analytics, security headers, CSP, cache-purge secrets
 
-**Small technical items:**
-- [ ] The Actions workflow logs Node 20 deprecation notices. Bump action versions when convenient.
-- [ ] The favicon uses Georgia via SVG text; it may render differently where that font is missing. Converting the "K" to a path would make it exact everywhere.
+**Technical, optional:**
+- [ ] Switch the code highlighter to a stylesheet (`noClasses = false`) to drop the inline `style=` attributes and simplify the CSP
+- [ ] Convert the `<text>` K in `monogram.html` to the same path used in the favicon, so the on-page monogram never varies by font
+- [ ] Confirm the first CI run with the new action versions and the GPS check
 
-**Ideas, in rough priority order:**
-1. `./new-post` helper script to scaffold and publish in one step
-2. Case-study writing pass and a real Homelab hub (hardware, network diagram, services)
-3. Reviews with a consistent format (verdict, pros and cons, time used)
-4. Client-side search once there are 30 or more posts
-5. Newsletter signup (needs an outside service)
-6. `/colophon` or `/bookshelf` page; testimonials on About or Résumé
-7. A browser-based editor (for example Sveltia CMS) if a WordPress-style admin is wanted
+**Backlog and later phases:**
+1. `./new-post` helper script (wraps `hugo new content --kind`)
+2. Homelab hub with a sanitized network diagram; 2 to 3 more case studies; first real gallery collection
+3. Lighthouse audit (target 90+ performance and accessibility)
+4. Pagefind search at 30+ posts, using the standalone binary to keep the no-Node decision
+5. Optional Giscus comments on posts; newsletter (needs an outside service); `/colophon`; browser editor (Sveltia CMS)
+
+**Maintenance cadence:** update Now monthly; publish at least one post monthly; review tags quarterly; upgrade Hugo quarterly (locally and in `pages.yml` together); re-verify how-tos and update `lastmod` every 6 months; update the resume on role or certification changes.
 
 ---
 
@@ -262,10 +323,16 @@ Create `content/gallery/<name>/index.md` with a `title`, `date`, `description`, 
 
 1. Scaffolded the Hugo site: custom theme, sections, RSS, dark mode, deploy workflow, `CNAME`
 2. Demoted photography to a footer-linked Gallery
-3. Added the "Start here" section, Homelab hub, case-study project pages, and Contact page
+3. Added the Start here section, Homelab hub, case-study project pages, and Contact page
 4. Created the GitHub repo, enabled Pages via Actions, pushed
 5. Connected `kalil.info`: DNS, certificate, Enforce HTTPS, then Cloudflare proxy with Full (strict)
 6. Added the monogram hero, teal accent, in-page lightbox, simplified headline, and mobile header fix
+7. **Overhaul phase 1 (structure and safety):**
+   - Renamed `posts` to `writing`; new nav; `ext-*.css` bundling
+   - Six categories with archetypes; status badges and review callout; monospace metadata
+   - Homepage audience doors and Now snippet; scaffolds for Resume, About, Homelab, Music, Uses
+   - Image privacy: originals no longer published, EXIF strip script and pre-commit hook, CI GPS check
+   - Favicon K as a path, branded share image, Cloudflare hardening guide, action version bump, optional cache-purge job
 
 ---
 
@@ -275,3 +342,4 @@ Create `content/gallery/<name>/index.md` with a `title`, `date`, `description`, 
 - Hugo is pinned to `0.166.0` in the workflow. Upgrade locally and in `pages.yml` together, and check `hugo` for deprecation warnings when doing so.
 - After a deploy, if the live page looks stale, purge the Cloudflare cache and hard-refresh.
 - `draft: true` content is excluded from production builds; `hugo server -D` includes it.
+- If you change the inline theme script in `<head>`, recompute the CSP hash (see `docs/cloudflare.md`).
