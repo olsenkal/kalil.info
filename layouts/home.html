@@ -21,11 +21,4 @@
 </section>
 {{ end }}
 
-{{ with where site.RegularPages "Type" "photos" }}
-<section>
-  <h2 class="section-title">Photography</h2>
-  <div class="cards">{{ range first 3 . }}{{ partial "album-card.html" . }}{{ end }}</div>
-  <p><a href="{{ "photos/" | relURL }}">All albums &rarr;</a></p>
-</section>
-{{ end }}
 {{ end }}
