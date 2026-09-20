@@ -25,6 +25,7 @@ enableRobotsTXT = true
   style = "dracula"
 
 [params]
+  # TODO: tagline and subtagline are placeholders; Kalil will supply the final copy. Do not edit until then.
   # TODO: rewrite in your own words. This one line is the most important text on the site.
   tagline = "Hi, I'm Kalil."
   subtagline = "I write about homelabs, how-tos, and the work I do."
@@ -40,19 +41,35 @@ enableRobotsTXT = true
     mastodon = ""
     instagram = ""
 
-  # "Start here" cards on the homepage. TODO: point these at your best pages.
+  # Audience doors on the homepage. A link with `ifPage` renders only when that page exists.
   [[params.startHere]]
-    title = "What I run at home"
-    url = "/homelab/"
-    blurb = "Hardware, network, and services, with the write-ups behind them."
+    title = "Work"
+    blurb = "For recruiters and clients: experience, outcomes, and how to get in touch."
+    [[params.startHere.links]]
+      title = "Resume"
+      url = "/resume/"
   [[params.startHere]]
-    title = "Selected work"
-    url = "/projects/"
-    blurb = "Case studies: the problem, what I did, and what changed."
+    title = "Build"
+    blurb = "For peers: case studies and what I run at home."
+    [[params.startHere.links]]
+      title = "Projects"
+      url = "/projects/"
+    [[params.startHere.links]]
+      title = "Homelab"
+      url = "/homelab/"
   [[params.startHere]]
-    title = "Experience"
-    url = "/resume/"
-    blurb = "Roles, outcomes, and skills."
+    title = "Life"
+    blurb = "For friends and family: life posts, pictures, and music."
+    [[params.startHere.links]]
+      title = "Life posts"
+      url = "/categories/life/"
+      ifPage = "/categories/life"
+    [[params.startHere.links]]
+      title = "Gallery"
+      url = "/gallery/"
+    [[params.startHere.links]]
+      title = "Music"
+      url = "/music/"
 
 [menus]
   [[menus.main]]
