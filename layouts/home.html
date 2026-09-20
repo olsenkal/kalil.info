@@ -8,12 +8,27 @@
   </div>
 </section>
 
+{{ with site.GetPage "/now" }}{{ with .Params.summary }}
+<aside class="now-snippet">
+  <h2 class="now-title">Now</h2>
+  <p>{{ . }} <a href="{{ "now/" | relURL }}">More on the Now page &rarr;</a></p>
+</aside>
+{{ end }}{{ end }}
+
 {{ with site.Params.startHere }}
 <section>
   <h2 class="section-title">Start here</h2>
-  <div class="cards">
+  <div class="cards doors">
     {{ range . }}
-      <article class="card"><h3><a href="{{ .url | relURL }}">{{ .title }}</a></h3><p>{{ .blurb }}</p></article>
+      <article class="card door">
+        <h3>{{ .title }}</h3>
+        <p>{{ .blurb }}</p>
+        <ul class="door-links">
+          {{ range .links }}{{ if or (not .ifPage) (site.GetPage .ifPage) }}
+            <li><a href="{{ .url | relURL }}">{{ .title }}</a></li>
+          {{ end }}{{ end }}
+        </ul>
+      </article>
     {{ end }}
   </div>
 </section>

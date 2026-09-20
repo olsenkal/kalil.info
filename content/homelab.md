@@ -3,16 +3,27 @@ title: Homelab
 type: homelab
 description: What I run at home, why, and how it's held together.
 ---
-TODO: Two or three sentences on the philosophy: what the lab is for and what you optimize for (cost, power draw, noise, learning).
+<!-- What belongs here: the lab overview. Builds and write-ups are listed below automatically. -->
+TODO: two or three sentences on the philosophy: what the lab is for and what you optimize for (cost, power draw, noise, learning).
 
 ## Hardware
 
-TODO: table or list of machines, roles, and specs.
+<!-- One row per machine. -->
+
+| Machine | Role | CPU | RAM | Storage | Notes |
+| --- | --- | --- | --- | --- | --- |
+| TODO | | | | | |
 
 ## Network
 
-TODO: a diagram or a short description of VLANs, DNS, and remote access.
+<!-- Sanitized diagram only: no real IPs, VLAN IDs, or MAC addresses. Use generic labels. -->
+TODO: a sanitized diagram or short description of the layout, DNS, and remote access. No real IPs, VLANs, or MACs.
 
 ## Services
 
 TODO: what runs, and where.
+
+## Backup strategy
+
+<!-- What is backed up, how often, where copies live, and how restores are tested. -->
+TODO: describe the approach (for example a 3-2-1 scheme) without exposing locations or credentials.
