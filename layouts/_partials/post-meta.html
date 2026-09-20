@@ -4,5 +4,5 @@
     &middot; Updated <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "Jan 2, 2006" }}</time>
   {{ end }}
   {{ if eq .Type "posts" }}&middot; {{ .ReadingTime }} min read{{ end }}
-  {{ with .GetTerms "categories" }}{{ range . }}&middot; <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ end }}
+  {{ with .GetTerms "categories" }}{{ range . }}&middot; <a class="cat" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}{{ end }}
 </p>

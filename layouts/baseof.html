@@ -10,6 +10,7 @@
     {{ block "main" . }}{{ end }}
   </main>
   {{ partial "footer.html" . }}
+  {{ block "scripts" . }}{{ end }}
   {{ with resources.Get "js/theme.js" | minify }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
 </body>
 </html>

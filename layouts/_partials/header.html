@@ -1,6 +1,6 @@
 <header class="site-header">
   <div class="wrap header-row">
-    <a class="brand" href="{{ "/" | relURL }}">{{ site.Title }}</a>
+    <a class="brand" href="{{ "/" | relURL }}">{{ partial "monogram.html" . }}<span>{{ site.Title }}</span></a>
     <nav aria-label="Main">
       <ul>
         {{ $current := . }}

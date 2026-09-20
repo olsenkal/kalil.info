@@ -1,8 +1,11 @@
 {{ define "main" }}
 <section class="hero">
-  <h1>{{ site.Params.tagline }}</h1>
-  <p class="lede">{{ site.Params.subtagline }}</p>
-  {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  <div class="hero-mark">{{ partial "monogram.html" . }}</div>
+  <div class="hero-text">
+    <h1>{{ site.Params.tagline }}</h1>
+    <p class="lede">{{ site.Params.subtagline }}</p>
+    {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+  </div>
 </section>
 
 {{ with site.Params.startHere }}

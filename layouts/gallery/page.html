@@ -15,4 +15,18 @@
     {{ end }}
   </div>
 </article>
+
+<dialog id="lightbox" aria-label="Image viewer">
+  <div class="lb-stage">
+    <button class="lb-btn lb-close" type="button" aria-label="Close">&times;</button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&#8249;</button>
+    <img alt="">
+    <button class="lb-btn lb-next" type="button" aria-label="Next image">&#8250;</button>
+    <p class="lb-cap" aria-live="polite"></p>
+  </div>
+</dialog>
+{{ end }}
+
+{{ define "scripts" }}
+  {{ with resources.Get "js/lightbox.js" | minify }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
 {{ end }}

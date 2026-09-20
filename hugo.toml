@@ -26,8 +26,8 @@ enableRobotsTXT = true
 
 [params]
   # TODO: rewrite in your own words. This one line is the most important text on the site.
-  tagline = "Building things, fixing things, and writing down what I learn."
-  subtagline = "Homelab notes, how-tos, reviews, and professional work."
+  tagline = "Hi, I'm Kalil."
+  subtagline = "I write about homelabs, how-tos, and the work I do."
   description = "Personal site of Kalil Olsen: writing, projects, and homelab notes."
   author = "Kalil Olsen"
   # Default share-card image (put a 1200x630 PNG at static/og-default.png).
