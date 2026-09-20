@@ -1,0 +1,20 @@
+{{ define "main" }}
+<article>
+  <header>
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p class="lede">{{ . }}</p>{{ end }}
+  </header>
+  <div class="prose">{{ .Content }}</div>
+
+  {{ $builds := where (where site.RegularPages "Type" "projects") "Params.homelab" true }}
+  {{ with $builds }}
+    <h2 class="section-title">Builds</h2>
+    <div class="cards">{{ range . }}{{ partial "project-card.html" . }}{{ end }}</div>
+  {{ end }}
+
+  {{ with site.GetPage "/categories/homelab" }}{{ with .Pages }}
+    <h2 class="section-title">Write-ups</h2>
+    <ul class="list">{{ range . }}{{ partial "post-item.html" . }}{{ end }}</ul>
+  {{ end }}{{ end }}
+</article>
+{{ end }}

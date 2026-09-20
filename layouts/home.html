@@ -5,6 +5,17 @@
   {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
 </section>
 
+{{ with site.Params.startHere }}
+<section>
+  <h2 class="section-title">Start here</h2>
+  <div class="cards">
+    {{ range . }}
+      <article class="card"><h3><a href="{{ .url | relURL }}">{{ .title }}</a></h3><p>{{ .blurb }}</p></article>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+
 {{ with where site.RegularPages "Type" "posts" }}
 <section>
   <h2 class="section-title">Latest writing</h2>

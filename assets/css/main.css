@@ -122,3 +122,12 @@ article header { margin-bottom: 1.6rem; }
 @media (prefers-reduced-motion: no-preference) {
   a, .theme-toggle { transition: color .15s, border-color .15s; }
 }
+
+/* case studies and hubs */
+article header .lede { margin-top: .4rem; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: .3rem 1.2rem; margin: 1.2rem 0 0; font-size: .95rem; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; }
+.callout { margin: 1.4rem 0 0; padding: .9rem 1.1rem; background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 6px; }
+.callout strong { display: block; font: 600 .8rem var(--sans); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: .2rem; }
+.contact-email { font: 600 1.4rem var(--serif); margin: 1rem 0; }
