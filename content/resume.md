@@ -1,5 +1,5 @@
 ---
-title: Résumé
+title: Resume
 description: Professional experience.
 ---
 <!-- TODO: put a PDF at static/resume.pdf and uncomment the next line. -->

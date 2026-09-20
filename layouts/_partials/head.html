@@ -31,6 +31,9 @@
   <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ site.Title }}">
 {{ end }}
 
-{{ with resources.Get "css/main.css" | minify | fingerprint }}
+{{- /* main.css first, then any assets/css/ext-*.css (one per feature area). */}}
+{{ $parts := slice (resources.Get "css/main.css") }}
+{{ range resources.Match "css/ext-*.css" }}{{ $parts = $parts | append . }}{{ end }}
+{{ with resources.Concat "css/bundle.css" $parts | minify | fingerprint }}
   <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}">
 {{ end }}

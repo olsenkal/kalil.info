@@ -2,7 +2,7 @@
 <article>
   <header>
     <h1>{{ .Title }}</h1>
-    {{ if eq .Type "posts" }}{{ partial "post-meta.html" . }}{{ end }}
+    {{ if eq .Type "writing" }}{{ partial "post-meta.html" . }}{{ end }}
   </header>
   <div class="prose">{{ .Content }}</div>
   {{ with .GetTerms "tags" }}

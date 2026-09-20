@@ -7,7 +7,7 @@ when: 2025 to present
 stack: [Proxmox, Docker, Tailscale]
 outcome: One measurable result, such as "Cut power draw 40% while doubling storage."
 # repo: https://github.com/you/project
-# writeup: /posts/example-homelab-writeup/
+# writeup: /writing/example-homelab-writeup/
 weight: 10
 ---
 ## Problem

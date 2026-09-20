@@ -19,11 +19,11 @@
 </section>
 {{ end }}
 
-{{ with where site.RegularPages "Type" "posts" }}
+{{ with where site.RegularPages "Type" "writing" }}
 <section>
   <h2 class="section-title">Latest writing</h2>
   <ul class="list">{{ range first 5 . }}{{ partial "post-item.html" . }}{{ end }}</ul>
-  <p><a href="{{ "posts/" | relURL }}">All posts &rarr;</a></p>
+  <p><a href="{{ "writing/" | relURL }}">All posts &rarr;</a></p>
 </section>
 {{ end }}
 
