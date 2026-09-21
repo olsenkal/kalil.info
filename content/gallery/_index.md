@@ -5,5 +5,7 @@ description: Photos and images from projects, homelab builds, and life.
 # in the repo but are not copied to the built site.
 cascade:
   build:
+    render: never
+    list: never
     publishResources: false
 ---

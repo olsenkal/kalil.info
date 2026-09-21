@@ -3,51 +3,7 @@
   <div class="hero-mark">{{ partial "monogram.html" . }}</div>
   <div class="hero-text">
     <h1>{{ site.Params.tagline }}</h1>
-    <p class="lede">{{ site.Params.subtagline }}</p>
-    {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+    <p class="lede">I'm still putting this site together, so there isn't much here yet. Check back soon.</p>
   </div>
 </section>
-
-{{ with site.GetPage "/now" }}{{ with .Params.summary }}
-<aside class="now-snippet">
-  <h2 class="now-title">Now</h2>
-  <p>{{ . }} <a href="{{ "now/" | relURL }}">More on the Now page &rarr;</a></p>
-</aside>
-{{ end }}{{ end }}
-
-{{ with site.Params.startHere }}
-<section>
-  <h2 class="section-title">Start here</h2>
-  <div class="cards doors">
-    {{ range . }}
-      <article class="card door">
-        <h3>{{ .title }}</h3>
-        <p>{{ .blurb }}</p>
-        <ul class="door-links">
-          {{ range .links }}{{ if or (not .ifPage) (site.GetPage .ifPage) }}
-            <li><a href="{{ .url | relURL }}">{{ .title }}</a></li>
-          {{ end }}{{ end }}
-        </ul>
-      </article>
-    {{ end }}
-  </div>
-</section>
-{{ end }}
-
-{{ with where site.RegularPages "Type" "writing" }}
-<section>
-  <h2 class="section-title">Latest writing</h2>
-  <ul class="list">{{ range first 5 . }}{{ partial "post-item.html" . }}{{ end }}</ul>
-  <p><a href="{{ "writing/" | relURL }}">All posts &rarr;</a></p>
-</section>
-{{ end }}
-
-{{ with where site.RegularPages "Type" "projects" }}
-<section>
-  <h2 class="section-title">Projects</h2>
-  <div class="cards">{{ range first 3 . }}{{ partial "project-card.html" . }}{{ end }}</div>
-  <p><a href="{{ "projects/" | relURL }}">All projects &rarr;</a></p>
-</section>
-{{ end }}
-
 {{ end }}

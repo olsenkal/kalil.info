@@ -11,8 +11,8 @@ enableRobotsTXT = true
   category = "categories"
 
 [outputs]
-  home = ["HTML", "RSS"]
-  section = ["HTML", "RSS"]
+  home = ["HTML"]
+  section = ["HTML"]
 
 [services.rss]
   limit = 20
@@ -29,7 +29,8 @@ enableRobotsTXT = true
   # TODO: rewrite in your own words. This one line is the most important text on the site.
   tagline = "Hi, I'm Kalil."
   subtagline = "I write about homelabs, how-tos, and the work I do."
-  description = "Personal site of Kalil Olsen: writing, projects, and homelab notes."
+  description = "Personal site of Kalil Olsen. Coming soon."
+  comingSoon = true
   author = "Kalil Olsen"
   # Default share-card image (put a 1200x630 PNG at static/og-default.png).
   ogImage = "og-default.png"
@@ -70,45 +71,3 @@ enableRobotsTXT = true
     [[params.startHere.links]]
       title = "Music"
       url = "/music/"
-
-[menus]
-  [[menus.main]]
-    name = "Writing"
-    pageRef = "/writing"
-    weight = 10
-  [[menus.main]]
-    name = "Projects"
-    pageRef = "/projects"
-    weight = 20
-  [[menus.main]]
-    name = "Homelab"
-    pageRef = "/homelab"
-    weight = 30
-  [[menus.main]]
-    name = "Resume"
-    pageRef = "/resume"
-    weight = 40
-  [[menus.main]]
-    name = "About"
-    pageRef = "/about"
-    weight = 50
-  [[menus.footer]]
-    name = "Now"
-    pageRef = "/now"
-    weight = 10
-  [[menus.footer]]
-    name = "Uses"
-    pageRef = "/uses"
-    weight = 20
-  [[menus.footer]]
-    name = "Gallery"
-    pageRef = "/gallery"
-    weight = 30
-  [[menus.footer]]
-    name = "Music"
-    pageRef = "/music"
-    weight = 40
-  [[menus.footer]]
-    name = "Contact"
-    pageRef = "/contact"
-    weight = 50

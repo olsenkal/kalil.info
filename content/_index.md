@@ -1,4 +1,11 @@
 ---
 title: Home
+# Coming-soon mode: nothing but the homepage is built. Revert this commit to launch.
+build:
+  render: always
+  list: always
+cascade:
+  build:
+    render: never
+    list: never
 ---
-<!-- TODO: optional intro paragraph shown under the tagline. Delete this comment or the whole body if you don't want one. -->
